@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYFLOWXX - Ticket Único</title>
+    <!-- Tailwind CSS para diseño rápido -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts para tipografía moderna -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos personalizados */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: #10B981; /* Verde vibrante */
+            overflow: hidden; /* Evita barras de scroll */
+        }
+        .perspective-container {
+            perspective: 1000px;
+        }
+        .logo-3d {
+            font-size: 2.5rem;
+            font-weight: 900;
+            transform-style: preserve-3d;
+            animation: spin3d 10s linear infinite;
+        }
+        @keyframes spin3d {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(360deg); }
+        }
+        .roulette-item {
+            height: 6rem; /* 96px */
+            font-size: 3rem; /* 48px */
+            font-weight: 700;
+        }
+        #slogan {
+            transition: opacity 1s ease;
+        }
+        #unique-number {
+            font-size: 8rem;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            text-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+            animation: revealNumber 0.5s ease-out forwards;
+        }
+        @keyframes revealNumber {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        @media (max-width: 640px) {
+            #unique-number { font-size: 5rem; }
+        }
+        .btn-link {
+            font-size: 0.9rem;
+            color: #6B7280; /* Gris sutil */
+            transition: all 0.3s ease;
+        }
+        .btn-link:hover {
+            color: #10B981;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="bg-black flex items-center justify-center min-h-screen">
+
+    <main class="text-center p-4 flex flex-col items-center gap-12">
+        <!-- Logo con efecto 3D -->
+        <div class="perspective-container">
+            <div class="logo-3d">MYFLOWXX</div>
+        </div>
+
+        <!-- Contenedor principal de la animación -->
+        <div class="flex flex-col items-center gap-4 h-48 justify-center">
+            <!-- Contenedor de la Ruleta -->
+            <div id="roulette-container" class="h-24 w-48 overflow-hidden relative border-y-2 border-green-500/30">
+                <div id="roulette-reel" class="absolute top-0 left-0 w-full">
+                    <!-- Los números se inyectarán aquí -->
+                </div>
+                <div class="absolute inset-0" style="background: linear-gradient(to bottom, #000 0%, transparent 20%, transparent 80%, #000 100%);"></div>
+            </div>
+
+            <!-- El número final se mostrará aquí -->
+            <h1 id="unique-number" class="text-green-400 hidden"></h1>
+            <p id="slogan" class="text-gray-400 text-lg uppercase tracking-widest opacity-0">
+                THIS IS YOUR TICKET...
+            </p>
+        </div>
+
+        <!-- Enlace al sitio web oficial -->
+        <a href="https://myflowxx.com" target="_blank" rel="noopener noreferrer" class="btn-link absolute bottom-8">
+            Ir a myflowxx.com
+        </a>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const rouletteReel = document.getElementById('roulette-reel');
+            const numberElement = document.getElementById('unique-number');
+            const sloganElement = document.getElementById('slogan');
+            const rouletteContainer = document.getElementById('roulette-container');
+
+            const MIN_NUMBER = 100;
+            const MAX_NUMBER = 135;
+            const ITEM_HEIGHT_PX = 96;
+            const REEL_ITEM_COUNT = 40;
+            const ANIMATION_DURATION_MS = 2800;
+
+            // --- Genera un número aleatorio DENTRO DEL RANGO 100-135 ---
+            function generateRandomInRange() {
+                return Math.floor(Math.random() * (MAX_NUMBER - MIN_NUMBER + 1)) + MIN_NUMBER;
+            }
+
+            // --- Inicia la animación de la ruleta ---
+            function startRouletteAnimation() {
+                const finalNumber = generateRandomInRange();
+                let reelHTML = '';
+
+                // Poblar el carrete con números aleatorios del rango
+                for (let i = 0; i < REEL_ITEM_COUNT - 1; i++) {
+                    reelHTML += `<div class="roulette-item flex items-center justify-center">${generateRandomInRange()}</div>`;
+                }
+                // Asegurarse de que el último número es el ganador
+                reelHTML += `<div class="roulette-item flex items-center justify-center">${finalNumber}</div>`;
+                rouletteReel.innerHTML = reelHTML;
+
+                // Iniciar la animación
+                setTimeout(() => {
+                    const finalPosition = -((REEL_ITEM_COUNT - 1) * ITEM_HEIGHT_PX);
+                    rouletteReel.style.transition = `transform ${ANIMATION_DURATION_MS}ms cubic-bezier(0.25, 1, 0.5, 1)`;
+                    rouletteReel.style.transform = `translateY(${finalPosition}px)`;
+                }, 100);
+
+                // Mostrar el resultado final
+                setTimeout(() => {
+                    rouletteContainer.style.display = 'none';
+                    numberElement.textContent = finalNumber;
+                    numberElement.classList.remove('hidden');
+                    sloganElement.style.opacity = '1';
+                }, ANIMATION_DURATION_MS + 200);
+            }
+
+            startRouletteAnimation();
+        });
+    </script>
+</body>
+</html>
+
